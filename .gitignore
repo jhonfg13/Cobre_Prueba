@@ -1,0 +1,28 @@
+# Data files
+# Ignore all CSV files within the data directory and its subdirectories
+data/**/*.csv
+
+# Ignore any CSV files possibly at the root (less common)
+*.csv
+
+# Environment specific
+.env
+
+# IDE specific
+.vscode/
+.idea/
+
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+
+# Notebook specific
+# Ignore Jupyter Notebook checkpoints directories
+.ipynb_checkpoints/
+
+# Ignore notebooks if they accidentally end up in data
+data/**/*.ipynb
+
+# Outputs - Generally, generated outputs shouldn't be tracked
+outputs/
