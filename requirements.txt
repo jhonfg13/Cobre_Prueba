@@ -1,0 +1,13 @@
+# Core libraries for data analysis and visualization
+pandas
+numpy
+matplotlib
+seaborn
+
+# Optional: Uncomment if using advanced stats functions
+# scipy
+
+# For Jupyter environment (optional but recommended)
+jupyterlab
+notebook
+ipykernel
