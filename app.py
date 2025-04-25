@@ -219,10 +219,7 @@ if df_processed is not None:
 
     try:
         # Obtener el directorio actual del script
-        script_dir = Path(__file__).resolve().parent
-        # Ir dos niveles hacia arriba desde /pages/app.py → / → raíz del proyecto
-        project_root = script_dir.parent.parent
-        abs_image_dir = project_root / STATIC_IMAGE_DIR
+        abs_image_dir = os.path.join(current_dir, 'outputs', 'figures')
 
         st.write(f"Looking for images in: `{abs_image_dir}`")
 
