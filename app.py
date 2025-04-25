@@ -17,7 +17,6 @@ except ImportError:
 # Paths should be relative to the root directory where streamlit run app.py is executed
 DATA_PATH_MKT = "data/raw/olist_marketing_qualified_leads_dataset.csv"
 DATA_PATH_CLOSED = "data/raw/olist_closed_deals_dataset.csv"
-STATIC_IMAGE_DIR = Path("outputs/figures")
 FORECAST_STEPS = 13
 
 # Ajustar la ruta para importar desde la carpeta 'src'
@@ -218,9 +217,12 @@ if df_processed is not None:
     st.header("Model Evaluation Plots")
 
     # Directorio actual del script
+    STATIC_IMAGE_DIR = Path("outputs/figures")
+
+    # Detectar directorio del script actual
     current_dir = Path(__file__).resolve().parent
-    # Ruta absoluta al directorio de imágenes
-    abs_image_dir = current_dir.parent.parent / 'outputs' / 'figures'
+    project_root = current_dir.parent  # solo un nivel arriba si estás en /src/cobre_prueba
+    abs_image_dir = project_root / STATIC_IMAGE_DIR
 
     st.write(f"Static images from model evaluation (source: `{abs_image_dir}`):")
 
