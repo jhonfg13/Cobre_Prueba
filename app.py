@@ -217,7 +217,7 @@ if df_processed is not None:
     st.header("Model Evaluation Plots")
 
     # Directorio actual del script
-    STATIC_IMAGE_DIR = Path("outputs/figures")
+    STATIC_IMAGE_DIR = "outputs/figures"
 
     # Detectar directorio del script actual
     current_dir = Path(__file__).resolve().parent
