@@ -108,10 +108,12 @@ st.header("Model Evaluation Plots")
 st.write(f"Static images from model evaluation (source: `{STATIC_IMAGE_DIR}`):")
 
 try:
-    # Ensure path is correct relative to the root where streamlit is run
-    abs_image_dir = os.path.abspath(STATIC_IMAGE_DIR)
+    # Ensure path is correct relative to the script file, not the CWD
+    script_dir = os.path.dirname(__file__)
+    project_root = os.path.abspath(os.path.join(script_dir, '..', '..')) # Go up two levels from pages/ to project root
+    abs_image_dir = os.path.join(project_root, STATIC_IMAGE_DIR)
     if not os.path.isdir(abs_image_dir):
-         st.warning(f"Directory not found: `{abs_image_dir}`. Please check the `STATIC_IMAGE_DIR` path.")
+         st.warning(f"Directory not found: `{abs_image_dir}`. Please check the `STATIC_IMAGE_DIR` path relative to the project root.")
          image_files = []
     else:
         image_files = [f for f in os.listdir(abs_image_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
