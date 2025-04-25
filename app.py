@@ -231,16 +231,16 @@ if df_processed is not None:
         # Filtra imágenes con extensiones válidas
         image_files = [f for f in abs_image_dir.iterdir() if f.suffix.lower() in ['.png', '.jpg', '.jpeg']]
     
-    if not image_files:
-        st.warning("No image files found.")
-    else:
-        cols = st.columns(min(3, len(image_files)))
-        for i, img_file in enumerate(image_files):
-            try:
-                image = Image.open(img_file)
-                cols[i % len(cols)].image(image, caption=img_file.name, use_column_width=True)
-            except Exception as e:
-                cols[i % len(cols)].error(f"Could not load image {img_file.name}: {e}")
+        if not image_files:
+            st.warning("No image files found.")
+        else:
+            cols = st.columns(min(3, len(image_files)))
+            for i, img_file in enumerate(image_files):
+                try:
+                    image = Image.open(img_file)
+                    cols[i % len(cols)].image(image, caption=img_file.name, use_column_width=True)
+                except Exception as e:
+                    cols[i % len(cols)].error(f"Could not load image {img_file.name}: {e}")
 
     # Separador y siguiente sección
     st.divider()
