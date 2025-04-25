@@ -229,7 +229,7 @@ if df_processed is not None:
     for i, img_file in enumerate(image_files):
         try:
             image = Image.open(img_file)
-            cols[i % len(cols)].image(image, caption=os.path.basename(img_file), use_column_width=True)
+            cols[i % len(cols)].image(image, caption=os.path.basename(img_file), use_container_width=True)
         except Exception as e:
             cols[i % len(cols)].error(f"Could not load image {img_file.name}: {e}")
 

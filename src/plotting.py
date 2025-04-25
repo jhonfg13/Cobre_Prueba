@@ -168,14 +168,14 @@ def plot_actual_vs_predicted_weekly(actuals_df: pd.DataFrame, forecast_df: pd.Da
     fig = go.Figure()
 
     # Añadir la traza de datos históricos reales
-    fig.add_trace(go.Scatter(x=actuals_df.index, y=actuals_df['Actual MQLs'],
+    fig.add_trace(go.Scatter(x=actuals_df['first_contact_date'], y=actuals_df['mql_count'],
                     mode='lines',
                     name='Actual MQLs'))
 
     # Añadir la traza de la predicción
     # Asegúrate de que forecast_df no esté vacío después del procesamiento
     if not forecast_df.empty:
-        fig.add_trace(go.Scatter(x=forecast_df.index, y=forecast_df['Predicted MQLs'],
+        fig.add_trace(go.Scatter(x=forecast_df['first_contact_date'], y=forecast_df['mql_count MQLs'],
                         mode='lines',
                         name='Predicted MQLs (SARIMA)',
                         line=dict(dash='dash'))) # Estilo de línea diferente
