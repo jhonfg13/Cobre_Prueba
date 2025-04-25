@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+from pathlib import Path
 from PIL import Image # To display images
 import plotly.graph_objects as go
 
@@ -31,8 +32,8 @@ except ImportError:
 # Paths should be relative to the root directory where streamlit run app.py is executed
 DATA_PATH_MKT = "data/raw/olist_marketing_qualified_leads_dataset.csv"
 DATA_PATH_CLOSED = "data/raw/olist_closed_deals_dataset.csv"
-STATIC_IMAGE_DIR = r"outputs\figures"
-FORECAST_STEPS = 12 # Number of steps to predict (e.g., 12 weeks)
+STATIC_IMAGE_DIR = Path("outputs/figures")
+FORECAST_STEPS = 13
 
 # --- Cached Data Processing and Modeling Function ---
 # (This function remains the same as previously defined)
@@ -108,27 +109,31 @@ st.header("Model Evaluation Plots")
 st.write(f"Static images from model evaluation (source: `{STATIC_IMAGE_DIR}`):")
 
 try:
-    # Ensure path is correct relative to the script file, not the CWD
-    script_dir = os.path.dirname(__file__)
-    project_root = os.path.abspath(os.path.join(script_dir, '..', '..')) # Go up two levels from pages/ to project root
-    abs_image_dir = os.path.join(project_root, STATIC_IMAGE_DIR)
-    if not os.path.isdir(abs_image_dir):
-         st.warning(f"Directory not found: `{abs_image_dir}`. Please check the `STATIC_IMAGE_DIR` path relative to the project root.")
-         image_files = []
+    # Obtener el directorio actual del script
+    script_dir = Path(__file__).resolve().parent
+    # Ir dos niveles hacia arriba desde /pages/app.py → / → raíz del proyecto
+    project_root = script_dir.parent.parent
+    abs_image_dir = project_root / STATIC_IMAGE_DIR
+
+    st.write(f"Looking for images in: `{abs_image_dir}`")
+
+    if not abs_image_dir.is_dir():
+        st.warning(f"Directory not found: `{abs_image_dir}`. Please check the `STATIC_IMAGE_DIR` path relative to the project root.")
+        image_files = []
     else:
-        image_files = [f for f in os.listdir(abs_image_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        image_files = [f for f in abs_image_dir.iterdir() if f.suffix.lower() in ['.png', '.jpg', '.jpeg']]
     
     if not image_files:
         st.warning(f"No compatible image files found in `{abs_image_dir}`.")
     else:
-        cols = st.columns(len(image_files) if len(image_files) <= 3 else 3)
+        cols = st.columns(min(3, len(image_files)))
         for i, img_file in enumerate(image_files):
-            img_path = os.path.join(abs_image_dir, img_file)
             try:
-                image = Image.open(img_path)
-                cols[i % len(cols)].image(image, caption=img_file, use_column_width=True)
+                image = Image.open(img_file)
+                cols[i % len(cols)].image(image, caption=img_file.name, use_column_width=True)
             except Exception as e:
-                cols[i % len(cols)].error(f"Could not load image {img_file}: {e}")
+                cols[i % len(cols)].error(f"Could not load image {img_file.name}: {e}")
+
 except Exception as e:
     st.error(f"An error occurred accessing the image directory `{STATIC_IMAGE_DIR}`: {e}")
 
