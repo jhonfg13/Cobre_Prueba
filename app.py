@@ -41,7 +41,7 @@ except ImportError as e:
 
 # --- Configuración de la página ---
 st.set_page_config(
-    page_title="Análisis de Atribución de Marketing",
+    page_title="Caso de Negocio: Análisis de Marketing",
     page_icon="📊",
     layout="wide" # Usar layout ancho para mejor visualización de tablas y gráficos
 )
@@ -150,6 +150,8 @@ if df_processed is not None:
     col5.metric("Tasa SQL -> Won", f"{funnel_metrics['conversion_sql_to_won']:.2%}")
     col6.metric("Tasa MQL -> Won (Global)", f"{funnel_metrics['conversion_mql_to_won']:.2%}")
 
+    st.markdown("Como se observa no tenemos las etapas de los diferentes canales de marketing, por lo que no podemos realizar un análisis de atribución completo.")
+
     st.markdown("---") # Separador
 
     # --- Sección: Análisis por Origen ---
@@ -173,6 +175,8 @@ if df_processed is not None:
 
     # --- Sección: Visualizaciones ---
     st.header("📈 Visualizaciones Clave")
+    st.markdown("""Se creo una **metodología adaptada al caso de negocio**, para poder realizar un análisis de atribución de marketing.
+                    Se basa principalmente en capturar el tiempo de conversión de cada origen y el rendimiento de cada canal.""")
 
     col_a, col_b = st.columns(2)
 
@@ -190,12 +194,13 @@ if df_processed is not None:
         try:
             fig_scatter = plot_conversion_scatter(origin_score_df)
             st.plotly_chart(fig_scatter, use_container_width=True)
-            st.caption("Gráfico de dispersión que relaciona el número de MQLs con la tasa de conversión. El tamaño de las burbujas representa el número de leads ganados.")
+            st.caption("Gráfico de burbujas que segmenta el rendimiento del canal por peso de conversión y días para convertir, el tamaño de las burbujas esta dado por el score propuesto.")
         except Exception as e:
             st.warning(f"No se pudo generar el gráfico de rendimiento de canales: {e}")
 
     # --- Mostrar Datos Crudos (Opcional y colapsable) ---
-    with st.expander("Ver Datos Preprocesados"):
+    st.markdown("¿Quieres ver los datos de la **metodología** aplicada?")
+    with st.expander("Ver Datos Preprocesados..."):
         st.dataframe(origin_score_df)
 
     # --- Sección: Forecast ---
@@ -219,7 +224,7 @@ if df_processed is not None:
     st.markdown("Dentro del análisis se decidio agrupar los datos por semana, para poder realizar un pronóstico más preciso")
 
 
-    st.header("Graficos de Evaluación de Modelos")
+    st.header("Gráficas de Evaluación de Modelos")
 
     #
     fig_dir = os.path.join(current_dir, 'outputs', 'figures')
