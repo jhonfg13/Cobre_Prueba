@@ -31,7 +31,7 @@ except ImportError:
 # Paths should be relative to the root directory where streamlit run app.py is executed
 DATA_PATH_MKT = "data/raw/olist_marketing_qualified_leads_dataset.csv"
 DATA_PATH_CLOSED = "data/raw/olist_closed_deals_dataset.csv"
-STATIC_IMAGE_DIR = "outputs/figures"
+STATIC_IMAGE_DIR = r"outputs\figures"
 FORECAST_STEPS = 12 # Number of steps to predict (e.g., 12 weeks)
 
 # --- Cached Data Processing and Modeling Function ---
