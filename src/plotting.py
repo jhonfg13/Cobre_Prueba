@@ -151,7 +151,7 @@ def plot_aggregated_mqls_by_period(df_agg: pd.DataFrame, title='MQLs por contact
     
     return fig
 
-def plot_actual_vs_predicted_weekly(actuals_df: pd.DataFrame, forecast_df: pd.DataFrame, title='Actual vs. Predicted Weekly MQLs'):
+def plot_actual_vs_predicted_weekly(actuals_df: pd.DataFrame, forecast_df: pd.DataFrame):
     """
     Generates a Plotly figure comparing actual weekly MQLs with predictions.
     Connects the last actual point to the first predicted point.
@@ -167,61 +167,26 @@ def plot_actual_vs_predicted_weekly(actuals_df: pd.DataFrame, forecast_df: pd.Da
     """
     fig = go.Figure()
 
-    actual_color = 'rgb(99, 110, 250)'
-    predicted_color = 'rgb(239, 85, 59)'
-    mql_col_actual = 'Actual MQLs'       # Assuming this is the column name
-    mql_col_pred = 'Predicted MQLs'    # Assuming this is the column name
+    # Añadir la traza de datos históricos reales
+    fig.add_trace(go.Scatter(x=actuals_df.index, y=actuals_df['Actual MQLs'],
+                    mode='lines',
+                    name='Actual MQLs'))
 
-    # Ensure dataframes are not empty before plotting
-    if actuals_df is not None and not actuals_df.empty and mql_col_actual in actuals_df.columns:
-        fig.add_trace(go.Scatter(
-            x=actuals_df.index,
-            y=actuals_df[mql_col_actual],
-            mode='lines',
-            name='Actual',
-            line=dict(color=actual_color)
-        ))
-    else:
-         print("Warning: Actuals DataFrame is missing, empty, or lacks the required MQL column.")
+    # Añadir la traza de la predicción
+    # Asegúrate de que forecast_df no esté vacío después del procesamiento
+    if not forecast_df.empty:
+        fig.add_trace(go.Scatter(x=forecast_df.index, y=forecast_df['Predicted MQLs'],
+                        mode='lines',
+                        name='Predicted MQLs (SARIMA)',
+                        line=dict(dash='dash'))) # Estilo de línea diferente
 
-
-    if forecast_df is not None and not forecast_df.empty and mql_col_pred in forecast_df.columns:
-        fig.add_trace(go.Scatter(
-            x=forecast_df.index,
-            y=forecast_df[mql_col_pred],
-            mode='lines',
-            name='Predicted',
-            line=dict(color=predicted_color)
-        ))
-    else:
-        print("Warning: Forecast DataFrame is missing, empty, or lacks the required MQL column.")
-
-
-    # Add connecting line if both dataframes have data and the required columns
-    if actuals_df is not None and not actuals_df.empty and mql_col_actual in actuals_df.columns and \
-       forecast_df is not None and not forecast_df.empty and mql_col_pred in forecast_df.columns:
-        try:
-            last_actual_x = actuals_df.index[-1]
-            last_actual_y = actuals_df[mql_col_actual].iloc[-1]
-            first_predicted_x = forecast_df.index[0]
-            first_predicted_y = forecast_df[mql_col_pred].iloc[0]
-
-            fig.add_trace(go.Scatter(
-                x=[last_actual_x, first_predicted_x],
-                y=[last_actual_y, first_predicted_y],
-                mode='lines',
-                line=dict(color=predicted_color), # Match prediction line color
-                showlegend=False
-            ))
-        except IndexError:
-             print("Warning: Could not create connecting line due to index issues.")
-
-
+    # Actualizar el layout de la gráfica
     fig.update_layout(
-        title=title,
+        title='Actual vs. Predicted Weekly MQLs',
         xaxis_title='Date',
         yaxis_title='MQL Count',
-        legend_title='Data Type',
-        hovermode="x unified"
-    )
+        legend_title='Series',
+        hovermode="x unified" # Mejora la interactividad del tooltip
+        )
+
     return fig

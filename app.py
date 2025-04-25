@@ -216,33 +216,22 @@ if df_processed is not None:
 
     st.header("Model Evaluation Plots")
 
-    # Directorio actual del script
-    STATIC_IMAGE_DIR = "outputs/figures"
+    #
+    fig_dir = os.path.join(current_dir, 'outputs', 'figures')
 
-    # Detectar directorio del script actual
-    current_dir = Path(__file__).resolve().parent
-    project_root = current_dir.parents[2]
-    abs_image_dir = project_root / STATIC_IMAGE_DIR
+    st.write(f"Static images from model evaluation (source: `{fig_dir}`):")
 
-    st.write(f"Static images from model evaluation (source: `{abs_image_dir}`):")
-
-    # Verifica que el directorio exista
-    if not abs_image_dir.exists():
-        st.warning(f"Directory not found: `{abs_image_dir}`. Please check the path.")
-    else:
-        # Filtra imágenes con extensiones válidas
-        image_files = [f for f in abs_image_dir.iterdir() if f.suffix.lower() in ['.png', '.jpg', '.jpeg']]
+    names_fig = ['comparacion_modelos_pronostico.png', 'acf_mqls_semanales.png', 'comparacion_modelos_pronostico_semanales.png']
     
-        if not image_files:
-            st.warning("No image files found.")
-        else:
-            cols = st.columns(min(3, len(image_files)))
-            for i, img_file in enumerate(image_files):
-                try:
-                    image = Image.open(img_file)
-                    cols[i % len(cols)].image(image, caption=img_file.name, use_column_width=True)
-                except Exception as e:
-                    cols[i % len(cols)].error(f"Could not load image {img_file.name}: {e}")
+    image_files = [os.path.join(fig_dir, name) for name in names_fig]
+
+    cols = st.columns(min(3, len(image_files)))
+    for i, img_file in enumerate(image_files):
+        try:
+            image = Image.open(img_file)
+            cols[i % len(cols)].image(image, caption=img_file.name, use_column_width=True)
+        except Exception as e:
+            cols[i % len(cols)].error(f"Could not load image {img_file.name}: {e}")
 
     # Separador y siguiente sección
     st.divider()
