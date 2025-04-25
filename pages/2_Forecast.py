@@ -4,14 +4,13 @@ import os
 from PIL import Image # To display images
 import plotly.graph_objects as go
 
-# --- Darts specific imports ---
+# --- statsmodels specific imports ---
 try:
-    from darts import TimeSeries
-    from darts.models import ARIMA
+    from statsmodels.tsa.statespace.sarimax import SARIMAX
     # Add other necessary imports from your notebook
 except ImportError:
-    st.error("Darts library not found. Please install it (`pip install darts`).")
-    st.stop() # Stop execution if Darts is missing
+    st.error("statsmodels library not found. Please install it (`pip install statsmodels`).")
+    st.stop() # Stop execution if statsmodels is missing
 
 # --- Import plotting functions ---
 # Assuming plotting.py is in the root directory (one level up from pages)
@@ -64,42 +63,29 @@ def generate_forecast_data(mkt_data_path, closed_data_path, forecast_n):
 
         # Convertir a TimeSeries
         mql_daily_series_pd = mql_daily_series.query(" first_contact_date <= '2018-05-28' ").set_index('first_contact_date')
-        mql_weekly_series_pd = mql_daily_series_pd.resample('W-MON').sum() # O 'W-MON' para inicio de semana, etc.
+        mql_weekly_series_pd = mql_daily_series_pd.resample('W-MON').sum()
 
-        # Luego crear el TimeSeries de Darts desde mql_weekly_series_pd
-        series_weekly = TimeSeries.from_dataframe(mql_weekly_series_pd.reset_index(), 
-                                          time_col='first_contact_date', # O el nombre que quede tras reset_index
-                                          value_cols='mql_count',
-                                          freq='W-MON') # Asegúrate que la freq coincida
+        # Suponiendo que `serie` es un pandas Series con índice de tiempo
+        model = SARIMAX(mql_weekly_series_pd, order=(1, 1, 0), seasonal_order=(1, 1, 1, 4))
         # --- 3. Train Model (Use parameters from notebook) ---
-        # >>> IMPORTANT: ADJUST THESE PARAMETERS TO MATCH YOUR FINAL MODEL <<<
-        model = ARIMA(p=1, d=1, q=0, seasonal_order=(1, 1, 1, 4))
-        model.fit(series_weekly)
-
+        resultado = model.fit(disp=False)
         # --- 4. Predict ---
-        forecast_ts = model.predict(n=forecast_n)
-
+        forecast_ts = resultado.get_forecast(steps=forecast_n).predicted_mean
         # --- 5. Post-processing for Plots ---
-        actuals_df = series_weekly.to_dataframe()
-        forecast_df = forecast_ts.to_dataframe().round(0)
+        df_predicciones = forecast_ts.reset_index().round(0)
+        df_predicciones.columns = ['first_contact_date', 'mql_count']
+        df_predicciones['Data Type'] = 'Predicted'
         #
-        original_col_name = actuals_df.columns[0]
-        actuals_df = actuals_df.rename(columns={original_col_name: 'Actual MQLs'})
-        actuals_df['Data Type'] = 'Actual'
-        # El forecast suele mantener el nombre de la columna original
-        forecast_df = forecast_df.rename(columns={original_col_name: 'Predicted MQLs'})
-        forecast_df['Data Type'] = 'Predicted'
+        mql_weekly_series_pd_reset = mql_weekly_series_pd.reset_index()
+        mql_weekly_series_pd_reset['Data Type'] = 'Actual'
+        #
+        df_concat = pd.concat([mql_weekly_series_pd_reset, df_predicciones], axis=0)
+        df_concat['contact_period'] = df_concat['first_contact_date'].astype(str).str[:7]
+        #
+        df_predict_agg = df_concat.groupby(['contact_period', 'Data Type'])\
+                                    .agg(mql_count=('mql_count', 'sum')).reset_index()
 
-        forecast_df_renamed = forecast_df.rename(columns={'Predicted MQLs': 'Actual MQLs'}) # Renombra para que coincida
-        combined_df_rows = pd.concat([actuals_df, forecast_df_renamed], axis=0) 
-        combined_df_rows = combined_df_rows[~combined_df_rows.index.duplicated(keep='first')]
-        #
-        combined_df_rows['contact_period'] = combined_df_rows.index.astype(str).str[:7]
-        #
-        df_predict_agg = combined_df_rows.groupby(['contact_period', 'Data Type'])\
-            .agg(mql_count=('Actual MQLs', 'sum')).reset_index()
-
-        return actuals_df, forecast_df, df_predict_agg
+        return mql_weekly_series_pd_reset, df_predicciones, df_predict_agg
 
     except FileNotFoundError as e:
         st.error(f"Error loading data file: {e}. Please ensure data exists at the specified paths relative to the project root.")
