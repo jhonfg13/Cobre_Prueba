@@ -118,5 +118,26 @@ if df_processed is not None:
     with st.expander("Ver Datos Preprocesados"):
         st.dataframe(origin_score_df)
 
+    # --- Sección: Forecast ---
+    st.set_page_config(
+    page_title="Marketing Analytics",
+    page_icon="📊", # Optional: Add an icon
+    layout="wide")
+
+    st.title("Marketing Analytics Dashboard")
+    st.markdown(
+        """
+        Welcome to the Marketing Analytics Dashboard.
+
+        Use the navigation sidebar on the left to explore different sections:
+        - **Forecast:** View MQL time series analysis and forecasts.
+    
+        *(Add more pages/sections as needed)*
+    """)
+
+# You can add other high-level elements or introductory content here.
+# The navigation to the "Forecast" page will be handled automatically by Streamlit
+# because of the file in the pages/ directory.
+
 else:
-    st.warning(f"La aplicación no puede continuar porque los datos no se cargaron correctamente. Se intentó cargar desde: {data_path_used}") 
+    st.warning(f"La aplicación no puede continuar porque los datos no se cargaron correctamente. Se intentó cargar desde: {data_path_used}")
