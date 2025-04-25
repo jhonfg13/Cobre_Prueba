@@ -199,43 +199,46 @@ if df_processed is not None:
         st.dataframe(origin_score_df)
 
     # --- Sección: Forecast ---
-    st.header("Marketing Analytics Dashboard")
+    st.divider()
+    st.header("Resultados de la Predicción de MQLs")
     st.markdown(
         """
-        Welcome to the Marketing Analytics Dashboard.
+        Bienvenid@ al **Forecast de MQLs**.
 
-        Use the navigation sidebar on the left to explore different sections:
-        - **Forecast:** View MQL time series analysis and forecasts.
-    
-        *(Add more pages/sections as needed)*
-    """)
+        En esta sección podrás ver los resultados de la predicción de MQLs:
 
-    st.title("Time Series Forecasting: MQLs")
-    st.markdown("Analysis and forecast of Marketing Qualified Leads (MQLs).")
+        - 📈 **Evaluación de Frecuencia**: Se evaluó la frecuencia de los datos para poder realizar un pronóstico más preciso.
+        - 📊 **Comparación de Modelos**: Se compararon los resultados de los diferentes modelos de pronóstico.
+        - 📈 **Pronóstico**: Se realizó un pronóstico de los MQLs para los próximos 3 meses.
+
+        Explora los resultados para tomar decisiones informadas basadas en datos.
+    """
+    )
+
+    st.title("Forecasting")
+    st.markdown("Dentro del análisis se decidio agrupar los datos por semana, para poder realizar un pronóstico más preciso")
 
 
-    st.header("Model Evaluation Plots")
+    st.header("Graficos de Evaluación de Modelos")
 
     #
     fig_dir = os.path.join(current_dir, 'outputs', 'figures')
-
     st.write(f"Static images from model evaluation (source: `{fig_dir}`):")
-
-    names_fig = ['comparacion_modelos_pronostico.png', 'acf_mqls_semanales.png', 'comparacion_modelos_pronostico_semanales.png']
-    
+    names_fig = ['comparacion_modelos_pronostico.png', 'acf_mqls_semanales.png',
+                 'comparacion_modelos_pronostico_semanales.png', 'sarimax_analisis_residuos_semanales.png']
     image_files = [os.path.join(fig_dir, name) for name in names_fig]
-
-    cols = st.columns(min(3, len(image_files)))
+    # Crear contenedores para mostrar las imágenes
+    cols = st.columns(min(4, len(image_files)))
     for i, img_file in enumerate(image_files):
         try:
             image = Image.open(img_file)
             cols[i % len(cols)].image(image, caption=os.path.basename(img_file), use_container_width=True)
         except Exception as e:
-            cols[i % len(cols)].error(f"Could not load image {img_file.name}: {e}")
+            cols[i % len(cols)].error(f"Could not load image {img_file}: {e}")
 
     # Separador y siguiente sección
     st.divider()
-    st.header("SARIMA Forecast Results")
+    st.header("SARIMA Resultados de la Predicción")
 
     # --- Generate Data and Plots ---
     # Call the cached function
@@ -243,7 +246,7 @@ if df_processed is not None:
         DATA_PATH_MKT, DATA_PATH_CLOSED, FORECAST_STEPS)
 
     # Display Plot 1
-    st.subheader("Weekly Actuals vs. Forecast")
+    st.subheader("Real Semanal vs. Predicción")
     if actual_data_df is not None and forecast_data_df is not None:
         fig1 = plot_actual_vs_predicted_weekly(actual_data_df, forecast_data_df)
         st.plotly_chart(fig1, use_container_width=True)
@@ -251,7 +254,7 @@ if df_processed is not None:
         st.warning("Could not generate data for the weekly actual vs predicted plot. Check data paths and processing steps.")
 
     # Display Plot 2
-    st.subheader("Aggregated MQLs by Period (Actual vs. Forecast)")
+    st.subheader("MQLs Agregados por Periodo (Real vs. Predicción)")
     if aggregated_data_df is not None:
         fig2 = plot_aggregated_mqls_by_period(aggregated_data_df)
         st.plotly_chart(fig2, use_container_width=True)
@@ -259,7 +262,8 @@ if df_processed is not None:
         st.warning("Could not generate data for the aggregated MQL plot. Check data processing and aggregation steps.")
         
     st.write("---")
-    st.markdown("Note: Forecasts generated using a SARIMA model based on historical weekly data. Ensure the model parameters in the code reflect the best model found during analysis.")
+    st.markdown("""Nota: Los pronósticos se generaron con un modelo SARIMAX sobre la serie semanal mql_weekly_series_pd, usando order=(1, 1, 0) y seasonal_order=(1, 1, 1, 4).
+                El modelo captura tanto la tendencia como la estacionalidad cada 4 semanas, utilizando componentes autorregresivos y de diferencia para estabilizar la serie.""")
 # You can add other high-level elements or introductory content here.
 # The navigation to the "Forecast" page will be handled automatically by Streamlit
 # because of the file in the pages/ directory.
