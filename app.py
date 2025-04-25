@@ -214,36 +214,35 @@ if df_processed is not None:
     st.title("Time Series Forecasting: MQLs")
     st.markdown("Analysis and forecast of Marketing Qualified Leads (MQLs).")
 
+
     st.header("Model Evaluation Plots")
-    st.write(f"Static images from model evaluation (source: `{STATIC_IMAGE_DIR}`):")
 
-    try:
-        # Obtener el directorio actual del script
-        abs_image_dir = os.path.join(current_dir, 'outputs', 'figures')
+    # Directorio actual del script
+    current_dir = Path(__file__).resolve().parent
+    # Ruta absoluta al directorio de imágenes
+    abs_image_dir = current_dir.parent.parent / 'outputs' / 'figures'
 
-        st.write(f"Looking for images in: `{abs_image_dir}`")
+    st.write(f"Static images from model evaluation (source: `{abs_image_dir}`):")
 
-        if not abs_image_dir.is_dir():
-            st.warning(f"Directory not found: `{abs_image_dir}`. Please check the `STATIC_IMAGE_DIR` path relative to the project root.")
-            image_files = []
-        else:
-            image_files = [f for f in abs_image_dir.iterdir() if f.suffix.lower() in ['.png', '.jpg', '.jpeg']]
+    # Verifica que el directorio exista
+    if not abs_image_dir.exists():
+        st.warning(f"Directory not found: `{abs_image_dir}`. Please check the path.")
+    else:
+        # Filtra imágenes con extensiones válidas
+        image_files = [f for f in abs_image_dir.iterdir() if f.suffix.lower() in ['.png', '.jpg', '.jpeg']]
     
-        if not image_files:
-            st.warning(f"No compatible image files found in `{abs_image_dir}`.")
-        else:
-            cols = st.columns(min(3, len(image_files)))
-            for i, img_file in enumerate(image_files):
-                try:
-                    image = Image.open(img_file)
-                    cols[i % len(cols)].image(image, caption=img_file.name, use_column_width=True)
-                except Exception as e:
-                    cols[i % len(cols)].error(f"Could not load image {img_file.name}: {e}")
+    if not image_files:
+        st.warning("No image files found.")
+    else:
+        cols = st.columns(min(3, len(image_files)))
+        for i, img_file in enumerate(image_files):
+            try:
+                image = Image.open(img_file)
+                cols[i % len(cols)].image(image, caption=img_file.name, use_column_width=True)
+            except Exception as e:
+                cols[i % len(cols)].error(f"Could not load image {img_file.name}: {e}")
 
-    except Exception as e:
-        st.error(f"An error occurred accessing the image directory `{STATIC_IMAGE_DIR}`: {e}")
-
-
+    # Separador y siguiente sección
     st.divider()
     st.header("SARIMA Forecast Results")
 
