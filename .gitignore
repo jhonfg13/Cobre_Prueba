@@ -25,4 +25,3 @@ __pycache__/
 data/**/*.ipynb
 
 # Outputs - Generally, generated outputs shouldn't be tracked
-outputs/
