@@ -200,12 +200,7 @@ if df_processed is not None:
         st.dataframe(origin_score_df)
 
     # --- Sección: Forecast ---
-    st.set_page_config(
-    page_title="Marketing Analytics",
-    page_icon="📊", # Optional: Add an icon
-    layout="wide")
-
-    st.title("Marketing Analytics Dashboard")
+    st.header("Marketing Analytics Dashboard")
     st.markdown(
         """
         Welcome to the Marketing Analytics Dashboard.
