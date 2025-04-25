@@ -175,7 +175,7 @@ def plot_actual_vs_predicted_weekly(actuals_df: pd.DataFrame, forecast_df: pd.Da
     # Añadir la traza de la predicción
     # Asegúrate de que forecast_df no esté vacío después del procesamiento
     if not forecast_df.empty:
-        fig.add_trace(go.Scatter(x=forecast_df['first_contact_date'], y=forecast_df['mql_count MQLs'],
+        fig.add_trace(go.Scatter(x=forecast_df['first_contact_date'], y=forecast_df['mql_count'],
                         mode='lines',
                         name='Predicted MQLs (SARIMA)',
                         line=dict(dash='dash'))) # Estilo de línea diferente
