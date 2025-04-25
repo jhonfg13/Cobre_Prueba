@@ -221,7 +221,7 @@ if df_processed is not None:
 
     # Detectar directorio del script actual
     current_dir = Path(__file__).resolve().parent
-    project_root = current_dir.parent  # solo un nivel arriba si estás en /src/cobre_prueba
+    project_root = current_dir.parents[2]
     abs_image_dir = project_root / STATIC_IMAGE_DIR
 
     st.write(f"Static images from model evaluation (source: `{abs_image_dir}`):")
